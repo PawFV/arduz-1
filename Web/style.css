@@ -302,3 +302,9 @@ select {
   color: #ccc;
   float: right;
 }
+/* @TODO debugging remove in production */
+th,
+td,
+th span {
+  background: rgb(31, 31, 31) !important;
+}

@@ -5,7 +5,8 @@ ob_start();
 
 $dbconn = mysqli_connect("localhost", "root", "");
 mysqli_select_db($dbconn, "arduz");
-if ($_SESSION['loggedE'] != "1") {
+
+if (!empty($_SESSION) && $_SESSION['loggedE'] != "1") {
 	$_SESSION['loggedE'] = "0";
 	$_SESSION['passwd'] = "";
 }
@@ -59,8 +60,7 @@ if (!isset($_REQUEST['a']) || !isset($actionArray[$_REQUEST['a']])) {
 }
 ob_end_flush();
 
-function bbcode($texto)
-{
+function bbcode($texto) {
 	// aplica bbcode a la string $texto
 	$texto = str_replace("\\n", "<br/>", $texto); //Saltos de Linea
 	$texto = str_replace("\n", "<br/>", $texto); //Saltos de Linea
@@ -87,8 +87,7 @@ function bbcode($texto)
 	return $texto;
 }
 
-function email_is_valid($email)
-{
+function email_is_valid($email) {
 	if (substr_count($email, '@') != 1)
 		return false;
 	if ($email[0] == '@')
@@ -117,8 +116,7 @@ function email_is_valid($email)
 	return true;
 }
 
-function u_online($minutos = 15)
-{
+function u_online($minutos = 15) {
 	global $context;
 	global $dbconn;
 	$tiem = $minutos * 60;
@@ -128,8 +126,7 @@ function u_online($minutos = 15)
 	return $online;
 }
 
-function u_online_t($minutos = 15)
-{
+function u_online_t($minutos = 15) {
 	global $dbconn;
 	global $context;
 	$result = mysqli_query($dbconn, "SELECT * FROM `servers` ORDER BY `players` DESC");
@@ -139,8 +136,7 @@ function u_online_t($minutos = 15)
 	return $online;
 }
 
-function rank_update()
-{
+function rank_update() {
 	$start = 1;
 	$query = mysql_query('SELECT * FROM `pjs` ORDER BY puntos DESC;');
 	while ($row = mysql_fetch_assoc($query)) {
@@ -160,8 +156,7 @@ function rank_update()
 	mysql_query("UPDATE `configuracion` SET `num` = '" . $start . "',`ultimoupd` = '" . time() . "' WHERE `cfg`='s' LIMIT 1");
 }
 
-function existeuser($user)
-{
+function existeuser($user) {
 	$sql = "SELECT `ID`,`nick` FROM `pjs` WHERE `nick`='" . $user . "' LIMIT 1;";
 	$result = mysql_query($sql);
 	$row = mysql_fetch_array($result);
@@ -172,8 +167,7 @@ function existeuser($user)
 	}
 }
 
-function infopj($datos)
-{
+function infopj($datos) {
 	$add = "<br/>Ultima vez online: ";
 	$tiempo = intval((time() - $datos['ultimologin']) / 60);
 	if ($tiempo < 61) {
@@ -201,8 +195,7 @@ function infopj($datos)
 	return htmlspecialchars($add);
 }
 
-function mzdecode($str)
-{
+function mzdecode($str) {
 	$temp = base64_decode($str);
 	$temp = utf8_encode(str_replace("@p@s", "R", $temp));
 	$temp = utf8_encode(str_replace("@4@o", "X", $temp));
@@ -214,4 +207,12 @@ function mzdecode($str)
 	$temp = utf8_encode(base64_decode($temp));
 	$temp = utf8_encode(str_replace("mzbbfdtt", "", $temp));
 	return utf8_encode(base64_decode($temp));
+}
+
+function debug($data) {
+	$output = $data;
+	if (is_array($output))
+		$output = implode(',', $output);
+
+	echo "<script>console.log('Debug Objects: " . $output . "' );</script>";
 }
